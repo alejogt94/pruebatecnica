@@ -2,15 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PruebaTecnica.Data;
 using PruebaTecnica.Models;
 
 namespace PruebaTecnica.Controllers
 {
-    public class CompraController : Controller
+    [Route("api/[controller]")]
+    [ApiController]
+    public class CompraController : ControllerBase
     {
         private readonly PruebaTecnicaContext _context;
 
@@ -19,130 +21,83 @@ namespace PruebaTecnica.Controllers
             _context = context;
         }
 
-        // GET: Compra
-        public async Task<IActionResult> Index()
+        // GET: api/Compra
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Compra>>> GetCompra()
         {
-            return View(await _context.Compra.ToListAsync());
+            return await _context.Compra.ToListAsync();
         }
 
-        // GET: Compra/Details/5
-        public async Task<IActionResult> Details(int? id)
+        // GET: api/Compra/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Compra>> GetCompra(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var compra = await _context.Compra
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (compra == null)
-            {
-                return NotFound();
-            }
-
-            return View(compra);
-        }
-
-        // GET: Compra/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Compra/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Id_cliente,Id_producto,Id_factura,Fecha")] Compra compra)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(compra);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(compra);
-        }
-
-        // GET: Compra/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             var compra = await _context.Compra.FindAsync(id);
+
             if (compra == null)
             {
                 return NotFound();
             }
-            return View(compra);
+
+            return compra;
         }
 
-        // POST: Compra/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Id_cliente,Id_producto,Id_factura,Fecha")] Compra compra)
+        // PUT: api/Compra/5
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutCompra(int id, Compra compra)
         {
             if (id != compra.Id)
             {
-                return NotFound();
+                return BadRequest();
             }
 
-            if (ModelState.IsValid)
+            _context.Entry(compra).State = EntityState.Modified;
+
+            try
             {
-                try
-                {
-                    _context.Update(compra);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!CompraExists(compra.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                await _context.SaveChangesAsync();
             }
-            return View(compra);
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!CompraExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
         }
 
-        // GET: Compra/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        // POST: api/Compra
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPost]
+        public async Task<ActionResult<Compra>> PostCompra(Compra compra)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            _context.Compra.Add(compra);
+            await _context.SaveChangesAsync();
 
-            var compra = await _context.Compra
-                .FirstOrDefaultAsync(m => m.Id == id);
+            return CreatedAtAction("GetCompra", new { id = compra.Id }, compra);
+        }
+
+        // DELETE: api/Compra/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteCompra(int id)
+        {
+            var compra = await _context.Compra.FindAsync(id);
             if (compra == null)
             {
                 return NotFound();
             }
 
-            return View(compra);
-        }
-
-        // POST: Compra/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var compra = await _context.Compra.FindAsync(id);
             _context.Compra.Remove(compra);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+
+            return NoContent();
         }
 
         private bool CompraExists(int id)

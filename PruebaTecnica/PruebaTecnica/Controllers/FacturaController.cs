@@ -2,15 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PruebaTecnica.Data;
 using PruebaTecnica.Models;
 
 namespace PruebaTecnica.Controllers
 {
-    public class FacturaController : Controller
+    [Route("api/[controller]")]
+    [ApiController]
+    public class FacturaController : ControllerBase
     {
         private readonly PruebaTecnicaContext _context;
 
@@ -19,130 +21,83 @@ namespace PruebaTecnica.Controllers
             _context = context;
         }
 
-        // GET: Factura
-        public async Task<IActionResult> Index()
+        // GET: api/Factura
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Factura>>> GetFactura()
         {
-            return View(await _context.Factura.ToListAsync());
+            return await _context.Factura.ToListAsync();
         }
 
-        // GET: Factura/Details/5
-        public async Task<IActionResult> Details(int? id)
+        // GET: api/Factura/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Factura>> GetFactura(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var factura = await _context.Factura
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (factura == null)
-            {
-                return NotFound();
-            }
-
-            return View(factura);
-        }
-
-        // GET: Factura/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Factura/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Fecha")] Factura factura)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(factura);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(factura);
-        }
-
-        // GET: Factura/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             var factura = await _context.Factura.FindAsync(id);
+
             if (factura == null)
             {
                 return NotFound();
             }
-            return View(factura);
+
+            return factura;
         }
 
-        // POST: Factura/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Fecha")] Factura factura)
+        // PUT: api/Factura/5
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutFactura(int id, Factura factura)
         {
             if (id != factura.Id)
             {
-                return NotFound();
+                return BadRequest();
             }
 
-            if (ModelState.IsValid)
+            _context.Entry(factura).State = EntityState.Modified;
+
+            try
             {
-                try
-                {
-                    _context.Update(factura);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!FacturaExists(factura.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                await _context.SaveChangesAsync();
             }
-            return View(factura);
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!FacturaExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
         }
 
-        // GET: Factura/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        // POST: api/Factura
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPost]
+        public async Task<ActionResult<Factura>> PostFactura(Factura factura)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            _context.Factura.Add(factura);
+            await _context.SaveChangesAsync();
 
-            var factura = await _context.Factura
-                .FirstOrDefaultAsync(m => m.Id == id);
+            return CreatedAtAction("GetFactura", new { id = factura.Id }, factura);
+        }
+
+        // DELETE: api/Factura/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteFactura(int id)
+        {
+            var factura = await _context.Factura.FindAsync(id);
             if (factura == null)
             {
                 return NotFound();
             }
 
-            return View(factura);
-        }
-
-        // POST: Factura/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var factura = await _context.Factura.FindAsync(id);
             _context.Factura.Remove(factura);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+
+            return NoContent();
         }
 
         private bool FacturaExists(int id)
