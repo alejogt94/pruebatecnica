@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "dgSpecHash": "FavI9WfmBErVU8mbqn/9UVcAs4V2SveP7A5MLta7ienOeH7yggmJDVGDRsgiBRJ705OzRA54us7/bTV7ULUawA==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\aleja\\3D Objects\\PruebaTecnica\\pruebatecnica\\PruebaTecnica\\PruebaTecnica\\PruebaTecnica.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\aleja\\.nuget\\packages\\microsoft.extensions.apidescription.server\\3.0.0\\microsoft.extensions.apidescription.server.3.0.0.nupkg.sha512",
+    "C:\\Users\\aleja\\.nuget\\packages\\microsoft.openapi\\1.2.3\\microsoft.openapi.1.2.3.nupkg.sha512",
+    "C:\\Users\\aleja\\.nuget\\packages\\swashbuckle.aspnetcore\\5.6.3\\swashbuckle.aspnetcore.5.6.3.nupkg.sha512",
+    "C:\\Users\\aleja\\.nuget\\packages\\swashbuckle.aspnetcore.swagger\\5.6.3\\swashbuckle.aspnetcore.swagger.5.6.3.nupkg.sha512",
+    "C:\\Users\\aleja\\.nuget\\packages\\swashbuckle.aspnetcore.swaggergen\\5.6.3\\swashbuckle.aspnetcore.swaggergen.5.6.3.nupkg.sha512",
+    "C:\\Users\\aleja\\.nuget\\packages\\swashbuckle.aspnetcore.swaggerui\\5.6.3\\swashbuckle.aspnetcore.swaggerui.5.6.3.nupkg.sha512"
+  ],
+  "logs": []
+}
